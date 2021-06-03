@@ -15,7 +15,7 @@ import qualified Data.Text.Prettyprint.Doc as Pretty
 import qualified Data.Text.Prettyprint.Doc.Render.Text as PrettyText
 import Data.Version (showVersion)
 import qualified Dhall.Core as Dhall
-import Dhall.Format (Format (..), FormatMode (..), format)
+import Dhall.Format (Format (..), format)
 import qualified Dhall.Map
 import qualified Dhall.Pretty
 import qualified Dhall.Util
@@ -60,9 +60,10 @@ writeDhall filepath expr = do
   Turtle.writeTextFile filepath $ pretty expr <> "\n"
   format
     ( Format
-        { characterSet = Dhall.Pretty.ASCII,
+        { chosenCharacterSet = Just Dhall.Pretty.Unicode,
           censor       = Dhall.Util.NoCensor,
-          formatMode   = Dhall.Format.Modify (Dhall.Util.InputFile $ Turtle.encodeString filepath)
+          input        = Dhall.Util.PossiblyTransitiveInputFile (Turtle.encodeString filepath) Dhall.Util.Transitive,
+          outputMode   = Dhall.Util.Write
         }
     )
 
@@ -72,6 +73,7 @@ mkRecord rootPath name block = do
   let recordPath = rootPath </> Turtle.fromText (name <> ".dhall")
   let record =
         Dhall.RecordLit $
+          Dhall.makeRecordField <$>
           Dhall.Map.fromList
             [ ("Type", mkBlockType block),
               ("default", mkBlockDefault block)
@@ -80,10 +82,10 @@ mkRecord rootPath name block = do
   writeDhall recordPath record
   where
     mkBlockType :: BlockRepr -> Expr
-    mkBlockType b = Dhall.Record $ Dhall.Map.fromList (typeAttrs b <> typeNested b)
+    mkBlockType b = Dhall.Record $ Dhall.makeRecordField <$> Dhall.Map.fromList (typeAttrs b <> typeNested b)
 
     mkBlockDefault :: BlockRepr -> Expr
-    mkBlockDefault b = Dhall.RecordLit $ Dhall.Map.fromList (defAttrs b <> defNested b)
+    mkBlockDefault b = Dhall.RecordLit $ Dhall.makeRecordField <$> Dhall.Map.fromList (defAttrs b <> defNested b)
 
     defAttrs  = attrs toDefault
     typeAttrs = attrs Just

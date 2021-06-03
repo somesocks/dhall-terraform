@@ -1,0 +1,7 @@
+cradle:
+  cabal:
+    - path: "src/"
+      component: lib:dhall-terraform
+    - path: "app/"
+      component: executable:dhall-terraform
+

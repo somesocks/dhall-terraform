@@ -1,23 +1,14 @@
-{ mkDerivation, aeson, aeson-casing, base, bytestring, containers
-, dhall, optparse-applicative, prettyprinter, split, stdenv, text
-, turtle
-}:
-mkDerivation {
-  pname = "dhall-terraform";
-  version = "0.1.0";
-  src = ./.;
-  isLibrary = true;
-  isExecutable = true;
-  libraryHaskellDepends = [
-    aeson aeson-casing base containers dhall split text turtle
-  ];
-  executableHaskellDepends = [
-    aeson base bytestring containers dhall optparse-applicative
-    prettyprinter text turtle
-  ];
-  testHaskellDepends = [ base ];
-  doHaddock = false;
-  doCheck = false;
-  description = "Creates Terraform resources using Dhall";
-  license = stdenv.lib.licenses.unlicense;
-}
+{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc8104"}:
+let
+  # config = {
+  #   packageOverrides = pkgs: {
+  #     haskellPackages = pkgs.haskellPackages.override {
+  #       overrides = hsklNew: hsklOld: rec {
+  #         haskeline = hsklNew.haskeline_0_8_1_2;
+  #       };
+  #     };
+  #   };
+  # };
+  dhall-terraform-build = nixpkgs.pkgs.haskell.packages.${compiler}.callPackage ./build.nix {};
+in
+  dhall-terraform-build

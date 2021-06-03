@@ -1,20 +1,18 @@
-
+{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc8104" }:
 let
-  config = {
-    packageOverrides = pkgs: rec {
-      haskellPackages = pkgs.haskellPackages.override {
-        overrides = haskellPackagesNew: haskellPackagesOld: rec {
-          dhall =
-            haskellPackagesNew.callPackage ./nix/dhall.nix {};
-
-          generic-random =
-            haskellPackagesNew.callPackage ./nix/generic-random.nix {};
-        };
-      };
-    };
+  haskell-language-server = nixpkgs.haskell-language-server.override {
+    supportedGhcVersions = [ "8104" ];
   };
-
-  pkgs = import <nixpkgs> { inherit config; };
-
+  default = import ./default.nix {
+    inherit nixpkgs compiler;
+  };
+  pkgs = nixpkgs;
+  new_default = default.overrideAttrs (oldAttrs: rec {
+    buildInputs = with pkgs; [
+      cabal-install
+      haskell-language-server
+      zlib
+    ];
+  });
 in
-  pkgs.haskellPackages.callPackage ./default.nix {}
+  new_default
