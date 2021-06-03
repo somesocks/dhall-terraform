@@ -11,11 +11,17 @@ hlint:
 	hlint ./app
 	hlint ./src
 
+gen-google-schema:
+	cd tf/google && terraform init && terraform providers schema -json | jq > schema.json
+
 gen-aws-schema:
 	cd tf/aws && terraform init && terraform providers schema -json | jq > schema.json
 
 gen-azure-schema:
 	cd tf/azurerm && terraform init && terraform providers schema -json | jq > schema.json
+
+gen-oci-schema:
+	cd tf/oci && terraform init && terraform providers schema -json | jq > schema.json
 
 patch-aws-schema:
 	# Although it's not specified in the schema the aws provider also takes a version parameter.
