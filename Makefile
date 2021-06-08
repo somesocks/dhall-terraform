@@ -23,6 +23,9 @@ gen-azure-schema:
 gen-oci-schema:
 	cd tf/oci && terraform init && terraform providers schema -json | jq > schema.json
 
+gen-aci-schema:
+	cd tf/aci && terraform init && terraform providers schema -json | jq > schema.json
+
 patch-aws-schema:
 	# Although it's not specified in the schema the aws provider also takes a version parameter.
 	# Without it, it defaults to the latest availalbe.
