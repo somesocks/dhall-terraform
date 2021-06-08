@@ -1,9 +1,8 @@
-# dhall-terraform
+# dhall-terraform-libgen
 
-[![CircleCI](https://circleci.com/gh/mujx/dhall-terraform.svg?style=svg)](https://circleci.com/gh/mujx/dhall-terraform)
-[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
+ [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`dhall-terraform` uses terraform's provider schema to generate Dhall types & defaults
+`dhall-terraform-libgen` uses terraform's provider schema to generate Dhall types & defaults
 for each `resource`, `data_source` & `provider` block. 
 
 This allows us to use Dhall to create cloud resources instead of HCL & avoid its
@@ -11,14 +10,15 @@ limitations.
 
 ### Installation
 
-You can use one of `cabal-install`, `stack` or `nix` to build and install the
+You can use one of `cabal-install` or `nix` to build and install the
 project.
 
 ### Usage
 
-- Use `dhall-terraform` to generate the types of your provider. 
+- Use terraform to generate a provider's schema
   See [here](https://www.terraform.io/docs/commands/providers/schema.html) how
   you can generate the provider's schema.
+- Use `dhall-terraform-libgen` to generate the types of your provider. 
 - Write the resources in Dhall. Checkout the [examples](./examples).
 - Use `dhall-to-json` to generate terraform's [JSON syntax][terraform_json_syntax]
 - Continue with `terraform` operations as normal.
@@ -90,9 +90,9 @@ in  { provider = [ awsProvider ]
 ### Options
 
 ```
-dhall-terraform :: v0.1.0
+dhall-terraform-libgen :: v0.2.0
 
-Usage: dhall-terraform (-f|--schema-file SCHEMA) (-p|--provider-name PROVIDER)
+Usage: dhall-terraform-libgen (-f|--schema-file SCHEMA) (-p|--provider-name PROVIDER)
                        [-o|--output-dir OUT_DIR]
   Generate Dhall types from Terraform resources
 

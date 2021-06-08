@@ -3,5 +3,4 @@ cradle:
     - path: "src/"
       component: lib:dhall-terraform
     - path: "app/"
-      component: executable:dhall-terraform
-
+      component: executable:dhall-terraform-libgen

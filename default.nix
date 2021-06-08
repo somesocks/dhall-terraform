@@ -1,4 +1,4 @@
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc8104"}:
+{ nixpkgs ? import <nixpkgs> {}, ... }:
 let
   # config = {
   #   packageOverrides = pkgs: {
@@ -9,6 +9,7 @@ let
   #     };
   #   };
   # };
+  compiler = "ghc8104";
   dhall-terraform-build = nixpkgs.pkgs.haskell.packages.${compiler}.callPackage ./build.nix {};
 in
   dhall-terraform-build

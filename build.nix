@@ -3,8 +3,8 @@
 , turtle
 }:
 mkDerivation {
-  pname = "dhall-terraform";
-  version = "0.1.0";
+  pname = "dhall-terraform-libgen";
+  version = "0.2.0";
   src = ./.;
   isLibrary = true;
   isExecutable = true;
@@ -16,6 +16,6 @@ mkDerivation {
     prettyprinter text turtle
   ];
   testHaskellDepends = [ base ];
-  description = "Creates Terraform resources using Dhall";
+  description = "Creates Dhall Resources from terraform provider schemas";
   license = lib.licenses.mit;
 }

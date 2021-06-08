@@ -151,7 +151,7 @@ opts =
     (Opt.helper <*> cliOpts)
     ( Opt.fullDesc
         <> Opt.progDesc "Generate Dhall types from Terraform resources"
-        <> Opt.header ("dhall-terraform :: v" <> showVersion version)
+        <> Opt.header ("dhall-terraform-libgen :: v" <> showVersion version)
     )
 
 main :: IO ()
