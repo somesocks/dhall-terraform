@@ -2,6 +2,9 @@
 
 `dhall-terraform-libgen` uses [PVP Versioning][1].
 
+0.3.0
+=====
+* Updated to async generate sources
 
 0.2.0
 =====

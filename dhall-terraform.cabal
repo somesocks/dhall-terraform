@@ -1,6 +1,6 @@
 cabal-version:       2.0
 name:                dhall-terraform
-version:             0.2.0
+version:             0.3.0
 synopsis:            Creates Terraform resources using Dhall
 description:         Generate Dhall types for an arbitrary Terraform provider using the provider schema.
 license:             MIT
@@ -47,6 +47,7 @@ executable dhall-terraform-libgen
   other-modules:       Paths_dhall_terraform
 
   build-depends:       base
+                     , async
                      , dhall-terraform
                      , optparse-applicative
                      , bytestring

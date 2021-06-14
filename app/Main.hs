@@ -5,6 +5,7 @@ module Main
   )
 where
 
+import Control.Concurrent.Async (mapConcurrently_)
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Lazy as B
 import Data.Map.Strict ((!), Map)
@@ -164,9 +165,14 @@ main = do
       providerDir    = mainDir </> Turtle.fromText "provider"
       resourcesDir   = mainDir </> Turtle.fromText "resources"
       dataSourcesDir = mainDir </> Turtle.fromText "data_sources"
+      schema_generator = uncurry generate
 
   doc <- readSchemaFile (optSchemaFile parsedOpts)
 
-  generate providerDir    (getProvider providerName doc)
-  generate resourcesDir   (getResources providerName doc)
-  generate dataSourcesDir (getDataSources providerName doc)
+  let generateDirs   = [ (providerDir,    getProvider providerName doc)
+                       , (resourcesDir,   getResources providerName doc)
+                       , (dataSourcesDir, getDataSources providerName doc)
+                       ]
+
+  mapConcurrently_ schema_generator generateDirs
+

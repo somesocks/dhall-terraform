@@ -1,10 +1,10 @@
-{ mkDerivation, aeson, aeson-casing, base, bytestring, containers
+{ mkDerivation, aeson, async, aeson-casing, base, bytestring, containers
 , dhall, lib, optparse-applicative, prettyprinter, split, text
 , turtle
 }:
 mkDerivation {
   pname = "dhall-terraform-libgen";
-  version = "0.2.0";
+  version = "0.3.0";
   src = ./.;
   isLibrary = true;
   isExecutable = true;
@@ -12,7 +12,7 @@ mkDerivation {
     aeson aeson-casing base containers dhall split text turtle
   ];
   executableHaskellDepends = [
-    aeson base bytestring containers dhall optparse-applicative
+    aeson async base bytestring containers dhall optparse-applicative
     prettyprinter text turtle
   ];
   testHaskellDepends = [ base ];
