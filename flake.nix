@@ -28,6 +28,7 @@
         devShell = pkgs.mkShell {
           buildInputs = with haskellPackages; [
             haskell-language-server
+            hoogle
             ghcid
             cabal-install
             pkgs.zlib
