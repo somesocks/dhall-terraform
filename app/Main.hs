@@ -8,7 +8,8 @@ where
 import Control.Concurrent.Async (mapConcurrently_)
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Lazy as B
-import Data.Map.Strict ((!), Map)
+import Data.Map.Strict (Map, (!))
+import Data.List.NonEmpty(NonEmpty(..))
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromJust, fromMaybe)
 import Data.Text (Text, pack)
@@ -24,9 +25,8 @@ import qualified Options.Applicative as Opt
 import Paths_dhall_terraform (version)
 import Terraform.Convert
 import Terraform.Types
-import qualified Turtle
 import Turtle ((</>))
-
+import qualified Turtle
 
 -- | Pretty print dhall expressions.
 pretty :: Pretty.Pretty a => a -> Text
@@ -62,9 +62,10 @@ writeDhall filepath expr = do
   format
     ( Format
         { chosenCharacterSet = Just Dhall.Pretty.Unicode,
-          censor       = Dhall.Util.NoCensor,
-          input        = Dhall.Util.PossiblyTransitiveInputFile (Turtle.encodeString filepath) Dhall.Util.Transitive,
-          outputMode   = Dhall.Util.Write
+          censor = Dhall.Util.NoCensor,
+          outputMode = Dhall.Util.Write,
+          transitivity = Dhall.Util.Transitive,
+          inputs = Dhall.Util.InputFile (Turtle.encodeString filepath) :| []
         }
     )
 
@@ -74,11 +75,11 @@ mkRecord rootPath name block = do
   let recordPath = rootPath </> Turtle.fromText (name <> ".dhall")
   let record =
         Dhall.RecordLit $
-          Dhall.makeRecordField <$>
-          Dhall.Map.fromList
-            [ ("Type", mkBlockType block),
-              ("default", mkBlockDefault block)
-            ]
+          Dhall.makeRecordField
+            <$> Dhall.Map.fromList
+              [ ("Type", mkBlockType block),
+                ("default", mkBlockDefault block)
+              ]
   Turtle.mktree rootPath
   writeDhall recordPath record
   where
@@ -88,23 +89,23 @@ mkRecord rootPath name block = do
     mkBlockDefault :: BlockRepr -> Expr
     mkBlockDefault b = Dhall.RecordLit $ Dhall.makeRecordField <$> Dhall.Map.fromList (defAttrs b <> defNested b)
 
-    defAttrs  = attrs toDefault
+    defAttrs = attrs toDefault
     typeAttrs = attrs Just
 
-    defNested  = nested toDefault
+    defNested = nested toDefault
     typeNested = nested Just
 
     attrs :: (Expr -> Maybe a) -> BlockRepr -> [(Text, a)]
     attrs mapExpr b =
-      M.toList
-        $ M.mapMaybe mapExpr
-        $ M.map attrToType (fromMaybe noAttrs $ _attributes b)
+      M.toList $
+        M.mapMaybe mapExpr $
+          M.map attrToType (fromMaybe noAttrs $ _attributes b)
 
     nested :: (Expr -> Maybe a) -> BlockRepr -> [(Text, a)]
     nested mapExpr b =
-      M.toList
-        $ M.mapMaybe mapExpr
-        $ M.map nestedToType (fromMaybe noNestedBlocks $ _blockTypes b)
+      M.toList $
+        M.mapMaybe mapExpr $
+          M.map nestedToType (fromMaybe noNestedBlocks $ _blockTypes b)
 
 generate :: Turtle.FilePath -> Map Text SchemaRepr -> IO ()
 generate rootDir schemas =
@@ -114,12 +115,11 @@ generate rootDir schemas =
   where
     blocks = M.toList $ M.map _schemaReprBlock schemas
 
-data CliOpts
-  = CliOpts
-      { optSchemaFile :: String,
-        optProviderName :: String,
-        optOutputDir :: String
-      }
+data CliOpts = CliOpts
+  { optSchemaFile :: String,
+    optProviderName :: String,
+    optOutputDir :: String
+  }
   deriving (Show, Eq)
 
 cliOpts :: Opt.Parser CliOpts
@@ -159,20 +159,20 @@ main :: IO ()
 main = do
   parsedOpts <- Opt.execParser opts
 
-  let outputDir      = Turtle.fromText $ pack $ optOutputDir parsedOpts
-      providerName   = pack $ optProviderName parsedOpts
-      mainDir        = outputDir </> Turtle.fromText providerName
-      providerDir    = mainDir </> Turtle.fromText "provider"
-      resourcesDir   = mainDir </> Turtle.fromText "resources"
+  let outputDir = Turtle.fromText $ pack $ optOutputDir parsedOpts
+      providerName = pack $ optProviderName parsedOpts
+      mainDir = outputDir </> Turtle.fromText providerName
+      providerDir = mainDir </> Turtle.fromText "provider"
+      resourcesDir = mainDir </> Turtle.fromText "resources"
       dataSourcesDir = mainDir </> Turtle.fromText "data_sources"
       schema_generator = uncurry generate
 
   doc <- readSchemaFile (optSchemaFile parsedOpts)
 
-  let generateDirs   = [ (providerDir,    getProvider providerName doc)
-                       , (resourcesDir,   getResources providerName doc)
-                       , (dataSourcesDir, getDataSources providerName doc)
-                       ]
+  let generateDirs =
+        [ (providerDir, getProvider providerName doc),
+          (resourcesDir, getResources providerName doc),
+          (dataSourcesDir, getDataSources providerName doc)
+        ]
 
   mapConcurrently_ schema_generator generateDirs
-
