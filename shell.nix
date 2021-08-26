@@ -1,4 +1,4 @@
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc8104" }:
+{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc8106" }:
 let
   haskell-language-server = nixpkgs.haskell-language-server.override {
     supportedGhcVersions = [ "8104" ];
