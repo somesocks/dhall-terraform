@@ -13,8 +13,8 @@ import Data.List.NonEmpty(NonEmpty(..))
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromJust, fromMaybe)
 import Data.Text (Text, pack)
-import qualified Data.Text.Prettyprint.Doc as Pretty
-import qualified Data.Text.Prettyprint.Doc.Render.Text as PrettyText
+import qualified Prettyprinter as Pretty
+import qualified Prettyprinter.Render.Text as PrettyText
 import Data.Version (showVersion)
 import qualified Dhall.Core as Dhall
 import Dhall.Format (Format (..), format)
