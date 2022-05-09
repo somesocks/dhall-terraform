@@ -1,6 +1,7 @@
 # dhall-terraform-libgen
 
  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/dhall-terraform/dhall-terraform)
 
 `dhall-terraform-libgen` uses terraform's provider schema to generate Dhall types & defaults
 for each `resource`, `data_source` & `provider` block. 
