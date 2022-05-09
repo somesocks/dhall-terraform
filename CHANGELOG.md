@@ -1,6 +1,10 @@
 # Changelog
 
 `dhall-terraform-libgen` uses [PVP Versioning][1].
+0.3.1
+=====
+* Update nix pkgs and ghc version
+* Update flakes and add gitpod
 
 0.3.0
 =====
