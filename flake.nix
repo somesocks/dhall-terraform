@@ -7,7 +7,7 @@
   };
 
   outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+    flake-utils.lib.eachSystem ["x86_64-linux"] (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
@@ -17,12 +17,12 @@
           pkgs.haskell.lib.doJailbreak (pkg.overrideAttrs (_: { meta = { }; }));
 
         packageName = "dhall-terraform-libgen";
-      in {
-        packages.${packageName} =
-          haskellPackages.callCabal2nix packageName self rec {
+        package_drv = haskellPackages.callCabal2nix packageName self rec {
             # Dependency overrides go here
-          };
-
+        };
+        package_fixed = package_drv // { meta.mainProgram = packageName; };
+      in {
+        packages.${packageName} = package_fixed;
         defaultPackage = self.packages.${system}.${packageName};
 
         devShell = pkgs.mkShell {
