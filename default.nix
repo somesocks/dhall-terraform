@@ -9,7 +9,7 @@ let
   #     };
   #   };
   # };
-  compiler = "ghc924";
+  compiler = "ghc928";
   dhall-terraform-build = nixpkgs.pkgs.haskell.packages.${compiler}.callPackage ./build.nix {};
 in
   dhall-terraform-build

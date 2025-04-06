@@ -1,5 +1,5 @@
 shell:
-	nix-shell --attr env shell.nix
+	NIXPKGS_ALLOW_UNFREE=1 nix-shell --attr env shell.nix
 
 release:
 	nix-build shell.nix
