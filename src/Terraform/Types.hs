@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 
 module Terraform.Types
   ( BlockRepr (..),
@@ -10,6 +11,7 @@ module Terraform.Types
     NestingMode (..),
     Attribute (..),
     AttributeType (..),
+    NestedType (..),
     Expr,
   )
 where
@@ -110,6 +112,7 @@ data BlockType
 instance FromJSON BlockType where
   parseJSON = genericParseJSON noUnderscoreSnakeCase
 
+
 data AttributeType
   = Cont (Text, Text)
   | Lit Text
@@ -126,9 +129,31 @@ untaggedOptions =
 instance FromJSON AttributeType where
   parseJSON = genericParseJSON untaggedOptions
 
+
+data NestedType
+  = NestedType
+    {
+      _attrAttributes :: Maybe (Map Text Attribute),
+      _attrNestingMode :: NestingMode
+    }
+  deriving (Show, Generic)
+
+instance FromJSON NestedType where
+  parseJSON = genericParseJSON (noUnderscoreNoPrefix "attr")
+
+
 data Attribute
-  = Attribute
+  = SimpleAttribute
       { _attrType :: AttributeType,
+        _attrOptional :: Maybe Bool,
+        _attrDescription :: Maybe Text,
+        _attrRequired :: Maybe Bool,
+        _attrComputed :: Maybe Bool,
+        _attrSensitive :: Maybe Bool
+      }
+    | NestedAttribute
+      {
+        _attrNestedType :: NestedType,
         _attrOptional :: Maybe Bool,
         _attrDescription :: Maybe Text,
         _attrRequired :: Maybe Bool,
@@ -137,5 +162,12 @@ data Attribute
       }
   deriving (Show, Generic)
 
+noUnderscoreNoPrefixNoTag :: String -> Options
+noUnderscoreNoPrefixNoTag prefix =
+  defaultOptions
+    { fieldLabelModifier = snakeCase . noPrefix prefix . noUnderscore,
+      AesonTypes.sumEncoding = AesonTypes.UntaggedValue
+    }
+
 instance FromJSON Attribute where
-  parseJSON = genericParseJSON (noUnderscoreNoPrefix "attr")
+  parseJSON = genericParseJSON (noUnderscoreNoPrefixNoTag "attr")

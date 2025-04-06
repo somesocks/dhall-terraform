@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 
 module Terraform.Convert
   ( toType,
@@ -19,8 +20,9 @@ import Data.Bifunctor ( Bifunctor(second) )
 import qualified Dhall.Core as Dhall
 import qualified Dhall.Map
 import Terraform.Types
-    ( Attribute(_attrRequired, _attrType),
+    ( Attribute(_attrRequired, _attrType, NestedAttribute, SimpleAttribute),
       AttributeType(..),
+      NestedType(..),
       BlockRepr(_attributes, _blockTypes),
       BlockType(_minItems, _block, _nestingMode),
       Expr,
@@ -50,13 +52,33 @@ nestedToType blk =
     theRecord = Dhall.Record $ Dhall.makeRecordField <$> exprMap
 
 -- | Converts an attribute to a Dhall expression.
-attrToType :: Attribute -> Expr
-attrToType attr =
-  if isReq
-    then toType (_attrType attr)
-    else Dhall.App Dhall.Optional $ toType (_attrType attr)
+nestedAttrToDhall :: NestedType -> Expr
+nestedAttrToDhall nested =
+  case _attrNestingMode nested of
+    SingleMode -> theRecord
+    ListMode   -> Dhall.App Dhall.List theRecord
+    SetMode    -> Dhall.App Dhall.List theRecord
+    MapMode    -> 
+      Dhall.App Dhall.List $
+        Dhall.Record $
+        Dhall.makeRecordField <$>
+          Dhall.Map.fromList
+            [("mapKey", Dhall.Text), ("mapValue", theRecord)]
+    MapMode    -> error $ "MapMode not implemented for nested attributes"
   where
-    isReq = fromMaybe False (_attrRequired attr)
+    attrs = Sm.toList $ Sm.map attrToType (fromMaybe Sm.empty (_attrAttributes nested))
+    exprMap = Dhall.Map.fromList attrs
+    theRecord = Dhall.Record $ Dhall.makeRecordField <$> exprMap
+
+attrToType :: Attribute -> Expr
+attrToType (NestedAttribute nestedAttr opt desc req comp sens) =
+  let baseExpr = nestedAttrToDhall nestedAttr
+      isReq = fromMaybe False req
+  in if isReq then baseExpr else Dhall.App Dhall.Optional baseExpr
+attrToType (SimpleAttribute typ opt desc req comp sens) =
+  let baseExpr = toType typ
+      isReq = fromMaybe False req
+  in if isReq then baseExpr else Dhall.App Dhall.Optional baseExpr
 
 -- | Empty map in case there are no attributes defined.
 noAttrs :: Sm.Map Text Attribute
@@ -71,6 +93,8 @@ toType :: AttributeType -> Expr
 toType (Lit "string") = Dhall.Text
 toType (Lit "number") = Dhall.Natural
 toType (Lit "bool") = Dhall.Bool
+-- | TODO: How to best represent dynamic blocks?
+toType (Lit "dynamic") = Dhall.Text
 toType (Cont ("map", "number")) =
   Dhall.App Dhall.List $
     Dhall.Record $
@@ -93,6 +117,24 @@ toType (Cont ("set", "number")) = Dhall.App Dhall.List Dhall.Natural
 toType (Cont ("list", "number")) = Dhall.App Dhall.List Dhall.Natural
 toType (Cont ("set", "string")) = Dhall.App Dhall.List Dhall.Text
 toType (Cont ("list", "string")) = Dhall.App Dhall.List Dhall.Text
+toType (Comb ("map", ts)) = case ts of
+  [t] ->
+    Dhall.App Dhall.List $
+      Dhall.Record $
+      Dhall.makeRecordField <$>
+        Dhall.Map.fromList
+          [ ("mapKey", Dhall.Text)
+          , ("mapValue", (toType t))
+          ]
+  [Lit t, s] ->
+    Dhall.App Dhall.List $
+      Dhall.Record $
+      Dhall.makeRecordField <$>
+        Dhall.Map.fromList
+          [ ("mapKey", Dhall.Text)
+          , ("mapValue", (toType (Comb (t, [s]))))
+          ]
+  _ -> error $ "missing case: " <> show ts
 toType (Comb ("set", ts)) = case ts of
   [t] -> Dhall.App Dhall.List (toType t)
   [Lit "object", obj] -> Dhall.App Dhall.List $ toType obj
