@@ -28,7 +28,7 @@ jobs:
 
     - run: nix run . -- --help 
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: dhall-terraform-${{matrix.os}}
         path: result/bin/dhall-terraform-libgen
