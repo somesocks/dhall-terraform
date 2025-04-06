@@ -1,8 +1,18 @@
+
+.PHONY: default
+default:
+
 shell:
 	NIXPKGS_ALLOW_UNFREE=1 nix-shell --attr env shell.nix
 
 release:
 	nix-build shell.nix
+
+tests:
+	./utils/run-tests.sh
+
+tests-clean:
+	./utils/clean-tests.sh
 
 install:
 	nix-env -f shell.nix -i
