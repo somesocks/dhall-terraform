@@ -28,6 +28,7 @@ library
                      , split
                      , dhall
                      , turtle
+                     , vector
 
   ghc-options:         -Wall
                        -Wincomplete-uni-patterns

@@ -134,25 +134,26 @@ toType (Comb ("map", ts)) = case ts of
           [ ("mapKey", Dhall.Text)
           , ("mapValue", (toType (Comb (t, [s]))))
           ]
-  _ -> error $ "missing case: " <> show ts
+  _ -> error $ "missing map case: " <> show ts
 toType (Comb ("set", ts)) = case ts of
   [t] -> Dhall.App Dhall.List (toType t)
   [Lit "object", obj] -> Dhall.App Dhall.List $ toType obj
-  [Lit "map", Lit "string"] ->
-    Dhall.App Dhall.List $
-      Dhall.Record $
-      Dhall.makeRecordField <$>
-        Dhall.Map.fromList [("mapKey", Dhall.Text), ("mapValue", Dhall.Text)]
-  _ -> error $ "missing case: " <> show ts
+  [Lit t, s] ->
+    Dhall.App Dhall.List (toType (Comb (t, [s])))
+  _ -> error $ "missing set case: " <> show ts
 toType (Comb ("list", ts)) = case ts of
   [t] -> Dhall.App Dhall.List (toType t)
   [Lit "object", obj] -> Dhall.App Dhall.List $ toType obj
-  [Lit "map", Lit "string"] ->
-    Dhall.App Dhall.List $
-      Dhall.Record $
-      Dhall.makeRecordField <$>
-        Dhall.Map.fromList [("mapKey", Dhall.Text), ("mapValue", Dhall.Text)]
-  _ -> error $ "missing case: " <> show ts
+  [Lit t, s] ->
+    Dhall.App Dhall.List (toType (Comb (t, [s])))
+  _ -> error $ "missing list case: " <> show ts
+toType (Comb ("object", ts)) = case ts of
+  [Obj m] ->
+    Dhall.Record $
+    Dhall.makeRecordField <$>
+      Dhall.Map.fromList
+          (Data.Bifunctor.second toType <$> Sm.toList m)
+  _ -> error $ "missing object case: " <> show ts
 toType (Obj m) =
   Dhall.Record $
   Dhall.makeRecordField <$>

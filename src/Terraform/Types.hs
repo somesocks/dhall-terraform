@@ -22,6 +22,7 @@ import Data.Aeson.Types as AesonTypes
 import Data.List.Split (splitOn)
 import Data.Map.Strict (Map)
 import Data.Text (Text)
+import qualified Data.Vector as V
 import qualified Dhall.Core as Dhall
 import qualified Dhall.Parser as Dhall
 import GHC.Generics
@@ -126,8 +127,20 @@ untaggedOptions =
     { AesonTypes.sumEncoding = AesonTypes.UntaggedValue
     }
 
+-- instance FromJSON AttributeType where
+--   parseJSON = genericParseJSON untaggedOptions
+
 instance FromJSON AttributeType where
-  parseJSON = genericParseJSON untaggedOptions
+  parseJSON v@(Array arr) =
+    if V.length arr == 2 then do
+      tag <- parseJSON (V.head arr) :: Parser Text
+      if tag == "object"
+         then do
+           m <- parseJSON (V.last arr)
+           pure (Obj m)
+         else genericParseJSON untaggedOptions v
+    else genericParseJSON untaggedOptions v
+  parseJSON v = genericParseJSON untaggedOptions v
 
 
 data NestedType
