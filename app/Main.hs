@@ -52,7 +52,10 @@ getProvider name schema =
    in M.fromList [("provider", provider)]
 
 getDataSources :: Text -> ProviderSchemaRepr -> Map Text SchemaRepr
-getDataSources name schema = fromJust $ _dataSourceSchemas (_providerSchemas schema ! name)
+getDataSources name schema =
+  case M.lookup name (_providerSchemas schema) of
+    Nothing -> error $ "Provider " <> show name <> " not found in schema"
+    Just psd -> fromMaybe M.empty (_dataSourceSchemas psd)
 
 -- | Write and format a Dhall expression to a file
 writeDhall :: Turtle.FilePath -> Expr -> IO ()
