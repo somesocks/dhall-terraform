@@ -28,7 +28,13 @@ jobs:
 
     - run: nix run . -- --help 
 
+    - if: ${{ matrix.os == 'ubuntu-22.04' }}
+      run: OS=linux ARCH=amd64 ./utils/prep-release.sh
+
+    - if: ${{ matrix.os == 'macos-13' }}
+      run: OS=darwin ARCH=amd64 ./utils/prep-release.sh
+
     - uses: actions/upload-artifact@v4
       with:
         name: dhall-terraform-${{matrix.os}}
-        path: result/bin/dhall-terraform-libgen
+        path: dist/dhall-terraform-libgen

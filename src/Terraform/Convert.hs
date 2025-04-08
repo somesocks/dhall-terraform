@@ -158,6 +158,6 @@ toType (Obj m) =
   Dhall.Record $
   Dhall.makeRecordField <$>
      Dhall.Map.fromList
-        (Data.Bifunctor.second toType <$> Sm.toList m)
-    
+        (Data.Bifunctor.second toType <$> Sm.toList m)    
 toType t = error $ "missing type definition: " <> show t
+-- test
