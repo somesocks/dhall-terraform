@@ -59,6 +59,8 @@ executable dhall-terraform-libgen
                      , text
                      , turtle
 
+  constraints:
+    zlib +bundled-c-zlib
 
   ghc-options:         -Wall
                        -threaded
