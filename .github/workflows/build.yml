@@ -18,6 +18,9 @@ jobs:
       with:
         nix_path: nixpkgs=channel:nixos-unstable
 
+    - if: matrix.os == 'ubuntu-22.04'
+      run: apt-get install -y zlib1g-dev
+
     - run: make setup
 
     - run: make build
