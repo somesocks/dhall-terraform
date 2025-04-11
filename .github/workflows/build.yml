@@ -24,15 +24,17 @@ jobs:
         path: /nix/store
         key: ${{ runner.os }}--nix-store
 
-    - run: nix build
+    - run: make setup
 
-    - run: nix run . -- --help 
+    - run: make build
 
-    - if: ${{ matrix.os == 'ubuntu-22.04' }}
-      run: OS=linux ARCH=amd64 ./utils/prep-release.sh
+    - run: make test
 
-    - if: ${{ matrix.os == 'macos-13' }}
-      run: OS=darwin ARCH=amd64 ./utils/prep-release.sh
+    # - if: ${{ matrix.os == 'ubuntu-22.04' }}
+    #   run: OS=linux ARCH=amd64 ./utils/prep-release.sh
+
+    # - if: ${{ matrix.os == 'macos-13' }}
+    #   run: OS=darwin ARCH=amd64 ./utils/prep-release.sh
 
     - uses: actions/upload-artifact@v4
       with:
