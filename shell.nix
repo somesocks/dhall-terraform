@@ -1,4 +1,4 @@
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc928" }:
+{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc966" }:
 let
   default = import ./default.nix {
     inherit nixpkgs compiler;
