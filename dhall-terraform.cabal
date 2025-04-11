@@ -74,6 +74,7 @@ executable dhall-terraform-libgen
                        -fhide-source-paths
                        -Wmissing-export-lists
                        -Wpartial-fields
+                       -optc-D_GNU_SOURCE
 
   default-language:    Haskell2010
 
