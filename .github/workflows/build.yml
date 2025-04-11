@@ -18,6 +18,8 @@ jobs:
       with:
         nix_path: nixpkgs=channel:nixos-unstable
 
+    - run: make setup
+
     - run: make build
 
     - run: make test

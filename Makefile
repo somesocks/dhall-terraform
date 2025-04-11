@@ -4,7 +4,7 @@ default:
 
 .PHONY: setup
 setup:
-	NIXPKGS_ALLOW_UNFREE=1 nix-shell --attr env shell.nix
+	nix-shell --run 'cabal update'
 
 .PHONY: build
 build:
