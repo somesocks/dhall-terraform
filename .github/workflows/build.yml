@@ -19,7 +19,7 @@ jobs:
         nix_path: nixpkgs=channel:nixos-unstable
 
     - if: matrix.os == 'ubuntu-22.04'
-      run: sudo apt-get install -y zlib1g-dev
+      run: sudo apt-get remove -y libc6-dev
 
     - run: make setup
 
