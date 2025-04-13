@@ -11,42 +11,12 @@ set -euf -o pipefail
 
 DIST_DIR=./dist
 
-OS=$(uname -s)
-case $OS in
-    Linux*)     OS="linux";;
-    Darwin*)    OS="darwin";;
-    *)          echo "unsupported os $OS"; exit 1;;
-esac
-
-ARCH=$(uname -m)
-case "$ARCH" in
-    x86_64)     ARCH="amd64";;
-    aarch64)    OS="arm64";;
-    arm64)    OS="arm64";;
-    *)          echo "unsupported arch $ARCH"; exit 1;;
-esac
-
-PLATFORM="$OS-$ARCH"
-
-cabal install \
-    exe:dhall-terraform-libgen \
-    --install-method=copy \
-    --overwrite-policy=always \
-    --installdir="$DIST_DIR" \
-    --ghc-options="-optc-D_GNU_SOURCE"
+source ./utils/common.sh
 
 case "$PLATFORM" in
-    linux-amd64)
-    patchelf \
-        --set-interpreter "/lib64/ld-linux-x86-64.so.2" \
-        --set-rpath "\$ORIGIN/../lib:/lib:/usr/lib:/lib64:/usr/lib64:/usr/lib/x86_64-linux-gnu" \
-        "$DIST_DIR"/dhall-terraform-libgen
-    ;;
-    linux-arm64)
-    patchelf \
-        --set-interpreter "/lib/ld-linux-aarch64.so.1" \
-        --set-rpath "\$ORIGIN/../lib:/lib:/usr/lib:/usr/lib/aarch64-linux-gnu" \
-        "$DIST_DIR"/dhall-terraform-libgen    
-    ;;
-    *) ;;
+    linux-amd64) nix-shell shell.linux-amd64.nix --run ./utils/in-shell/build.sh;;
+    linux-arm64) nix-shell shell.linux-arm64.nix --run ./utils/in-shell/build.sh;;
+    darwin-amd64) nix-shell shell.darwin-amd64.nix --run ./utils/in-shell/build.sh;;
+    darwin-arm64) nix-shell shell.darwin-arm64.nix --run ./utils/in-shell/build.sh;;
+    *) echo "unsupported platform $PLATFORM"; exit 1;;
 esac

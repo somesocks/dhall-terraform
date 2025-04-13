@@ -1,4 +1,6 @@
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc928" }:
+{ nixpkgs ? import <nixpkgs> {
+    crossSystem = { config = "x86_64-linux-musl"; };
+  }, compiler ? "ghc966" }:
 let
   default = import ./default.nix {
     inherit nixpkgs compiler;

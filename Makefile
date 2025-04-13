@@ -4,18 +4,18 @@ default:
 
 .PHONY: setup
 setup:
-	nix-shell --run 'cabal update'
+	./utils/setup.sh
 
 .PHONY: build
 build:
-	nix-shell --run ./utils/build.sh
+	./utils/build.sh
 
 .PHONY: test
 test: test-schemas
 
 .PHONY: test-schemas
 test-schemas:
-	nix-shell --run ./utils/run-tests.sh
+	./utils/run-tests.sh
 
 test-schemas--clean:
-	nix-shell --run ./utils/clean-tests.sh
+	./utils/clean-tests.sh
