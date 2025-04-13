@@ -15,5 +15,6 @@ cabal install \
     exe:dhall-terraform-libgen \
     --install-method=copy \
     --overwrite-policy=always \
-    --installdir="$DIST_DIR"
+    --installdir="$DIST_DIR" \
+    --ghc-options="-optc-D_GNU_SOURCE"
 
