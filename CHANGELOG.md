@@ -1,6 +1,12 @@
 # Changelog
 
 `dhall-terraform-libgen` uses [PVP Versioning][1].
+0.4.0
+=====
+* Update ghc to 9.6.6
+* Fixed support for new attribute types
+
+
 0.3.1
 =====
 * Update nix pkgs and ghc version

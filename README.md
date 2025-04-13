@@ -91,7 +91,7 @@ in  { provider = [ awsProvider ]
 ### Options
 
 ```
-dhall-terraform-libgen :: v0.3.1
+dhall-terraform-libgen :: v0.4.0
 
 Usage: dhall-terraform-libgen (-f|--schema-file SCHEMA) (-p|--provider-name PROVIDER)
                        [-o|--output-dir OUT_DIR]
