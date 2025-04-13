@@ -1,4 +1,6 @@
-{ nixpkgs ? import <nixpkgs> { }, compiler ? "ghc966" }:
+{ nixpkgs ? import <nixpkgs> {
+    crossSystem = { config = "x86_64-apple-darwin"; };
+}, compiler ? "ghc966" }:
 let
   default = import ./default.nix {
     inherit nixpkgs compiler;
