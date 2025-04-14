@@ -28,6 +28,15 @@ esac
 
 PLATFORM="$OS-$ARCH"
 
+
+case "$PLATFORM" in
+    # on ubuntu 24.04, the build tries to use zstd but can't find it
+    linux-amd64|linux-arm64)
+    export LD_LIBRARY_PATH=/lib:${LD_LIBRARY_PATH:-}
+    ;;
+    *);;
+esac
+
 cabal install \
     exe:dhall-terraform-libgen \
     --install-method=copy \
