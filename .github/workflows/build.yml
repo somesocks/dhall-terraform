@@ -22,11 +22,11 @@ jobs:
       with:
         nix_path: nixpkgs=channel:nixos-unstable
 
-    - if: matrix.os == 'ubuntu-22.04'
-      run: sudo apt-get remove -y libc6-dev
+    - if: matrix.os == 'ubuntu-24.04'
+      run: sudo apt-get update -y && sudo apt-get install -y zstd
 
-    - if: matrix.os == 'ubuntu-22.04-arm'
-      run: sudo apt-get remove -y libc6-dev
+    - if: matrix.os == 'ubuntu-24.04-arm'
+      run: sudo apt-get update -y && sudo apt-get install -y zstd
 
     - run: make setup
 
