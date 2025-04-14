@@ -34,20 +34,14 @@ jobs:
 
     - run: make test
 
-    # - if: ${{ matrix.os == 'ubuntu-22.04' }}
-    #   run: OS=linux ARCH=amd64 ./utils/prep-release.sh
-
-    # - if: ${{ matrix.os == 'macos-13' }}
-    #   run: OS=darwin ARCH=amd64 ./utils/prep-release.sh
-
     - uses: actions/upload-artifact@v4
-      if: ${{ matrix.os == 'ubuntu-22.04' }}
+      if: ${{ matrix.os == 'ubuntu-24.04' }}
       with:
         name: dhall-terraform-linux-amd64
         path: dist/dhall-terraform-libgen
 
     - uses: actions/upload-artifact@v4
-      if: ${{ matrix.os == 'ubuntu-22.04-arm' }}
+      if: ${{ matrix.os == 'ubuntu-24.04-arm' }}
       with:
         name: dhall-terraform-linux-arm64
         path: dist/dhall-terraform-libgen
