@@ -9,6 +9,7 @@ let
       cabal-install
       haskell-language-server
       zlib
+      zstd
     ];
   });
 in
