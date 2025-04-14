@@ -13,8 +13,8 @@ jobs:
             os:
               - ubuntu-22.04 # linux-amd64
               - ubuntu-22.04-arm # linux-arm64
-              - macos-13 # darwin-amd64
-              - macos-14 # darwin-arm64
+              # - macos-13 # darwin-amd64
+              # - macos-14 # darwin-arm64
     steps:
     - uses: actions/checkout@v3.6.0
 
