@@ -2,9 +2,7 @@
     crossSystem = { config = "aarch64-apple-darwin"; };
 }, compiler ? "ghc966" }:
 let
-  default = import ./default.nix {
-    inherit nixpkgs compiler;
-  };
+  default = nixpkgs.pkgs.haskell.packages.${compiler}.callPackage ./build.nix {};
   pkgs = nixpkgs;
   new_default = default.overrideAttrs (oldAttrs: rec {
     buildInputs = with pkgs; [
