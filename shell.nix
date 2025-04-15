@@ -1,4 +1,9 @@
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc966" }:
+{ nixpkgs ? import <nixpkgs> {}, 
+  compiler ? (
+    let envCompiler = builtins.getEnv "GHC_COMPILER";
+    in if envCompiler == "" then "ghc928" else envCompiler    
+  )
+}:
 let
   default = import ./default.nix {
     inherit nixpkgs compiler;
