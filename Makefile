@@ -7,7 +7,7 @@ setup:
 	nix-shell --run 'cabal update'
 
 .PHONY: build
-build:
+build: setup
 	nix-shell --run ./utils/build.sh
 
 .PHONY: test
