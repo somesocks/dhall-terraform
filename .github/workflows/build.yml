@@ -45,13 +45,13 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: ${{ matrix.os == 'ubuntu-22.04' }}
       with:
-        name: dhall-terraform-linux-amd64
+        name: dhall-terraform-linux-amd64-old
         path: dist/dhall-terraform-libgen
 
     - uses: actions/upload-artifact@v4
       if: ${{ matrix.os == 'ubuntu-22.04-arm' }}
       with:
-        name: dhall-terraform-linux-arm64
+        name: dhall-terraform-linux-arm64-old
         path: dist/dhall-terraform-libgen
 
     - uses: actions/upload-artifact@v4
